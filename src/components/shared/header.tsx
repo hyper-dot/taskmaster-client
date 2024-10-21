@@ -14,7 +14,7 @@ export const Navigation: React.FC = () => {
             <span className="ml-2 text-xl font-bold">TaskMaster</span>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="flex items-center space-x-4 md:space-x-8">
             <ThemeToggle />
             <LoginDialog />
           </div>

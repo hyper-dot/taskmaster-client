@@ -1,6 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { PlusCircle, CheckCircle2, Circle, Clock } from "lucide-react";
+import {
+  PlusCircle,
+  CheckCircle2,
+  Circle,
+  Clock,
+  ClipboardX,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SortBy } from "@/components/dashboard/SortBy";
@@ -63,7 +69,7 @@ const TaskManager: React.FC = () => {
 
   const getStatusBadgeColor = (status: TaskStatus): string => {
     const colors: Record<TaskStatus, string> = {
-      pending: "bg-gray-100 text-gray-700",
+      pending: "bg-orange-100 text-gray-700",
       "in-progress": "bg-blue-100 text-blue-700",
       completed: "bg-green-100 text-green-700",
     };
@@ -128,48 +134,59 @@ const TaskManager: React.FC = () => {
 
         {/* Tasks List */}
         <div className="space-y-4">
-          {filteredTasks.map((task: Task) => (
-            <div
-              key={task.id}
-              className="p-6 border rounded-xl transition-all bg-secondary"
-            >
-              <div className="flex items-start gap-4">
-                <button
-                  onClick={() =>
-                    updateStatus(task.id, statusTransitions[task.status])
-                  }
-                  className="mt-1 hover:scale-110 transition-transform"
-                >
-                  {getStatusIcon(task.status)}
-                </button>
+          {filteredTasks.length ? (
+            filteredTasks.map((task: Task) => (
+              <div
+                key={task.id}
+                className="p-6 border rounded-xl transition-all bg-secondary"
+              >
+                <div className="flex items-start gap-4">
+                  <button
+                    onClick={() =>
+                      updateStatus(task.id, statusTransitions[task.status])
+                    }
+                    className="mt-1 hover:scale-110 transition-transform"
+                  >
+                    {getStatusIcon(task.status)}
+                  </button>
 
-                <div className="flex-1 relative">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3
-                      className={cn(
-                        "text-lg font-medium",
-                        task.status === "completed" &&
-                          "line-through text-muted-foreground",
-                      )}
-                    >
-                      {task.title}
-                    </h3>
-                    <span
-                      className={cn(
-                        "py-[0.1rem] px-2 md:px-4 md:py-1 text-xs absolute sm:static -top-5 -right-3 rounded-full whitespace-nowrap md:text-sm font-medium",
-                        getStatusBadgeColor(task.status),
-                      )}
-                    >
-                      {task.status.charAt(0).toUpperCase() +
-                        task.status.slice(1).replace("-", " ")}
-                    </span>
+                  <div className="flex-1 relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3
+                        className={cn(
+                          "text-lg font-medium",
+                          task.status === "completed" &&
+                            "line-through text-muted-foreground",
+                        )}
+                      >
+                        {task.title}
+                      </h3>
+                      <span
+                        className={cn(
+                          "py-[0.1rem] px-2 md:px-4 md:py-1 text-xs absolute sm:static -top-5 -right-3 rounded-full whitespace-nowrap md:text-sm font-medium",
+                          getStatusBadgeColor(task.status),
+                        )}
+                      >
+                        {task.status.charAt(0).toUpperCase() +
+                          task.status.slice(1).replace("-", " ")}
+                      </span>
+                    </div>
+
+                    <p className="text-muted-foreground">{task.description}</p>
                   </div>
-
-                  <p className="text-muted-foreground">{task.description}</p>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="w-full mt-10 md:mt-16 flex flex-col items-center justify-center">
+              <ClipboardX className="w-12 h-12 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-2">No tasks found</h3>
+              <p className="text-muted-foreground text-center max-w-sm text-sm">
+                There are no tasks available at the moment. Create a new task to
+                get started.
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>
