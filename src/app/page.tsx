@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SortBy } from "@/components/dashboard/SortBy";
 import { cn } from "@/lib/utils";
+import AddTaskDialog from "@/components/dashboard/AddTask";
 
 // Updated type definitions
 type TaskStatus = "pending" | "in-progress" | "completed";
@@ -98,16 +99,7 @@ const TaskManager: React.FC = () => {
           <Input placeholder="Search tasks..." className="md:flex-1" />
           <div className="flex gap-4">
             <SortBy />
-
-            <Button
-              onClick={() => {
-                // Add dialog open logic here
-              }}
-              className="flex items-center gap-2"
-            >
-              <PlusCircle className="w-5 h-5" />
-              Add Task
-            </Button>
+            <AddTaskDialog />
           </div>
         </div>
 

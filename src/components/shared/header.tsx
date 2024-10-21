@@ -2,6 +2,7 @@ import React from "react";
 import { CheckSquare } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import LoginDialog from "../common/LoginDialog";
+import Link from "next/link";
 
 export const Navigation: React.FC = () => {
   return (
@@ -9,10 +10,10 @@ export const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           {/* Logo and brand */}
-          <div className="flex items-center">
+          <Link href="/" className="flex items-center">
             <CheckSquare className="w-8 h-8 text-blue-500" />
             <span className="ml-2 text-xl font-bold">TaskMaster</span>
-          </div>
+          </Link>
 
           <div className="flex items-center space-x-4 md:space-x-8">
             <ThemeToggle />
