@@ -5,7 +5,7 @@ import LoginDialog from "../common/LoginDialog";
 
 export const Navigation: React.FC = () => {
   return (
-    <nav className="shadow-md">
+    <nav className="border-b">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           {/* Logo and brand */}

@@ -4,45 +4,45 @@ import { PlusCircle, CheckCircle2, Circle, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SortBy } from "@/components/dashboard/SortBy";
+import { cn } from "@/lib/utils";
+
+// Updated type definitions
+type TaskStatus = "pending" | "in-progress" | "completed";
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: TaskStatus;
+}
+
+type StatusTransitions = {
+  [K in TaskStatus]: TaskStatus;
+};
 
 const TaskManager: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
       title: "Complete project proposal",
+      description: "Draft and finalize the Q3 project proposal document",
       status: "pending",
-      priority: "high",
     },
     {
       id: 2,
       title: "Review code changes",
+      description: "Review pull requests for the new feature implementation",
       status: "in-progress",
-      priority: "medium",
     },
     {
       id: 3,
       title: "Update documentation",
+      description: "Update API documentation with new endpoints",
       status: "completed",
-      priority: "low",
     },
   ]);
 
-  const [newTask, setNewTask] = useState<string>("");
-
-  const addTask = (e: React.FormEvent): void => {
-    e.preventDefault();
-    if (!newTask.trim()) return;
-
-    const task: Task = {
-      id: Date.now(),
-      title: newTask,
-      status: "pending",
-      priority: "medium",
-    };
-
-    setTasks([task, ...tasks]);
-    setNewTask("");
-  };
+  const [activeFilter, setActiveFilter] = useState<TaskStatus | "all">("all");
 
   const updateStatus = (taskId: number, newStatus: TaskStatus): void => {
     setTasks(
@@ -50,23 +50,6 @@ const TaskManager: React.FC = () => {
         task.id === taskId ? { ...task, status: newStatus } : task,
       ),
     );
-  };
-
-  const updatePriority = (taskId: number, newPriority: TaskPriority): void => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, priority: newPriority } : task,
-      ),
-    );
-  };
-
-  const getPriorityColor = (priority: TaskPriority): string => {
-    const colors: Record<TaskPriority, string> = {
-      high: "text-red-500",
-      medium: "text-yellow-500",
-      low: "text-green-500",
-    };
-    return colors[priority];
   };
 
   const getStatusIcon = (status: TaskStatus): JSX.Element => {
@@ -78,6 +61,15 @@ const TaskManager: React.FC = () => {
     return icons[status];
   };
 
+  const getStatusBadgeColor = (status: TaskStatus): string => {
+    const colors: Record<TaskStatus, string> = {
+      pending: "bg-gray-100 text-gray-700",
+      "in-progress": "bg-blue-100 text-blue-700",
+      completed: "bg-green-100 text-green-700",
+    };
+    return colors[status];
+  };
+
   // Type-safe status transitions
   const statusTransitions: StatusTransitions = {
     pending: "in-progress",
@@ -85,64 +77,100 @@ const TaskManager: React.FC = () => {
     completed: "pending",
   };
 
+  const filteredTasks = tasks.filter(
+    (task) => activeFilter === "all" || task.status === activeFilter,
+  );
+
   return (
-    <div className="max-w-2xl mx-auto my-10">
-      <form onSubmit={addTask} className="flex gap-2 mb-6 justify-between">
-        <Button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          <PlusCircle className="w-5 h-5" />
-          Add Task
-        </Button>
+    <div className="max-w-3xl mx-auto mb-4 md:my-10 px-4">
+      <div className="flex flex-col gap-6">
+        {/* Header Section */}
+        <div className="flex justify-between items-center"></div>
 
-        <div className="flex gap-2">
-          <Input placeholder="search..." />
-          <SortBy />
+        {/* Search and Filter Section */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Input placeholder="Search tasks..." className="md:flex-1" />
+          <div className="flex gap-4">
+            <SortBy />
+
+            <Button
+              onClick={() => {
+                // Add dialog open logic here
+              }}
+              className="flex items-center gap-2"
+            >
+              <PlusCircle className="w-5 h-5" />
+              Add Task
+            </Button>
+          </div>
         </div>
-      </form>
 
-      <div className="space-y-4">
-        {tasks.map((task: Task) => (
-          <div
-            key={task.id}
-            className="p-4 border rounded-lg hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+        {/* Status Filter Tabs */}
+        <div className="flex gap-2 flex-wrap">
+          {["all", "pending", "in-progress", "completed"].map((status) => (
+            <button
+              key={status}
+              onClick={() => setActiveFilter(status as TaskStatus | "all")}
+              className={cn(
+                "px-4 py-1 text-sm md:text-base rounded-full font-medium transition-colors",
+                activeFilter === status
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary hover:bg-secondary/80",
+              )}
+            >
+              {status === "all"
+                ? "All"
+                : status.charAt(0).toUpperCase() +
+                  status.slice(1).replace("-", " ")}
+            </button>
+          ))}
+        </div>
+
+        {/* Tasks List */}
+        <div className="space-y-4">
+          {filteredTasks.map((task: Task) => (
+            <div
+              key={task.id}
+              className="p-6 border rounded-xl transition-all bg-secondary"
+            >
+              <div className="flex items-start gap-4">
                 <button
                   onClick={() =>
                     updateStatus(task.id, statusTransitions[task.status])
                   }
-                  className="hover:scale-110 transition-transform"
+                  className="mt-1 hover:scale-110 transition-transform"
                 >
                   {getStatusIcon(task.status)}
                 </button>
-                <span
-                  className={
-                    task.status === "completed"
-                      ? "line-through text-gray-500"
-                      : ""
-                  }
-                >
-                  {task.title}
-                </span>
-              </div>
 
-              <select
-                value={task.priority}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  updatePriority(task.id, e.target.value as TaskPriority)
-                }
-                className={`${getPriorityColor(task.priority)} bg-transparent border rounded-lg px-2 py-1`}
-              >
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
+                <div className="flex-1 relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3
+                      className={cn(
+                        "text-lg font-medium",
+                        task.status === "completed" &&
+                          "line-through text-muted-foreground",
+                      )}
+                    >
+                      {task.title}
+                    </h3>
+                    <span
+                      className={cn(
+                        "py-[0.1rem] px-2 md:px-4 md:py-1 text-xs absolute sm:static -top-5 -right-3 rounded-full whitespace-nowrap md:text-sm font-medium",
+                        getStatusBadgeColor(task.status),
+                      )}
+                    >
+                      {task.status.charAt(0).toUpperCase() +
+                        task.status.slice(1).replace("-", " ")}
+                    </span>
+                  </div>
+
+                  <p className="text-muted-foreground">{task.description}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

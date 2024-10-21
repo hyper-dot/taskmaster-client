@@ -3,28 +3,29 @@ import * as React from "react";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const options = [
+  { label: "Date", value: "date" },
+  { label: "Status", value: "status" },
+  { label: "Priority", value: "priority" },
+];
 
 export function SortBy() {
   return (
     <Select>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+        <SelectValue placeholder="Sort By" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
-        </SelectGroup>
+        {options.map((item, idx) => (
+          <SelectItem value={item.value} key={idx}>
+            {item.label}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
