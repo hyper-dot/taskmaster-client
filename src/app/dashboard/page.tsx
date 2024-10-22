@@ -1,19 +1,20 @@
 "use client";
 import React, { useState } from "react";
 import {
-  PlusCircle,
   CheckCircle2,
   Circle,
   Clock,
   ClipboardX,
+  CalendarDays,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SortBy } from "@/components/dashboard/SortBy";
 import { cn } from "@/lib/utils";
 import AddTaskDialog from "@/components/dashboard/AddTask";
+import { tasks as data } from "@/__data__/tasks";
 
-// Updated type definitions
 type TaskStatus = "pending" | "in-progress" | "completed";
 
 interface Task {
@@ -21,6 +22,7 @@ interface Task {
   title: string;
   description: string;
   status: TaskStatus;
+  deadline: string; // ISO string format
 }
 
 type StatusTransitions = {
@@ -28,26 +30,7 @@ type StatusTransitions = {
 };
 
 const TaskManager: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Complete project proposal",
-      description: "Draft and finalize the Q3 project proposal document",
-      status: "pending",
-    },
-    {
-      id: 2,
-      title: "Review code changes",
-      description: "Review pull requests for the new feature implementation",
-      status: "in-progress",
-    },
-    {
-      id: 3,
-      title: "Update documentation",
-      description: "Update API documentation with new endpoints",
-      status: "completed",
-    },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(data as Task[]);
 
   const [activeFilter, setActiveFilter] = useState<TaskStatus | "all">("all");
 
@@ -77,7 +60,35 @@ const TaskManager: React.FC = () => {
     return colors[status];
   };
 
-  // Type-safe status transitions
+  const getDeadlineStatus = (
+    deadline: string,
+  ): {
+    color: string;
+    label: string;
+  } => {
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    const daysUntilDeadline = Math.ceil(
+      (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (daysUntilDeadline < 0) {
+      return { color: "text-red-400", label: "Overdue" };
+    } else if (daysUntilDeadline <= 3) {
+      return { color: "text-orange-500", label: "Due soon" };
+    } else {
+      return { color: "text-lime-600 dark:text-lime-200", label: "On track" };
+    }
+  };
+
+  const formatDeadline = (deadline: string): string => {
+    return new Date(deadline).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   const statusTransitions: StatusTransitions = {
     pending: "in-progress",
     "in-progress": "completed",
@@ -89,12 +100,10 @@ const TaskManager: React.FC = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto mb-4 md:my-10 px-4">
+    <div className="max-w-3xl mx-auto mb-4 md:my-10 px-4 w-full">
       <div className="flex flex-col gap-6">
-        {/* Header Section */}
         <div className="flex justify-between items-center"></div>
 
-        {/* Search and Filter Section */}
         <div className="flex flex-col sm:flex-row gap-4">
           <Input placeholder="Search tasks..." className="md:flex-1" />
           <div className="flex gap-4">
@@ -103,7 +112,6 @@ const TaskManager: React.FC = () => {
           </div>
         </div>
 
-        {/* Status Filter Tabs */}
         <div className="flex gap-2 flex-wrap">
           {["all", "pending", "in-progress", "completed"].map((status) => (
             <button
@@ -124,7 +132,6 @@ const TaskManager: React.FC = () => {
           ))}
         </div>
 
-        {/* Tasks List */}
         <div className="space-y-4">
           {filteredTasks.length ? (
             filteredTasks.map((task: Task) => (
@@ -132,7 +139,7 @@ const TaskManager: React.FC = () => {
                 key={task.id}
                 className="p-6 border rounded-xl transition-all bg-secondary"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3 md:gap-4">
                   <button
                     onClick={() =>
                       updateStatus(task.id, statusTransitions[task.status])
@@ -164,9 +171,51 @@ const TaskManager: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-muted-foreground text-sm md:text-base">
+                    <p className="text-muted-foreground text-sm md:text-base mb-2">
                       {task.description}
                     </p>
+
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 mt-3",
+                        task.status === "completed"
+                          ? "line-through text-muted-foreground"
+                          : "",
+                      )}
+                    >
+                      <CalendarDays
+                        className={cn(
+                          "w-4 h-4",
+                          getDeadlineStatus(task.deadline).color,
+                          task.status === "completed"
+                            ? "text-muted-foreground"
+                            : "",
+                        )}
+                      />
+                      <span className="text-sm">
+                        {formatDeadline(task.deadline)}
+                      </span>
+                      {task.status !== "completed" && (
+                        <span
+                          className={cn(
+                            "text-sm ml-2",
+                            getDeadlineStatus(task.deadline).color,
+                          )}
+                        >
+                          • {getDeadlineStatus(task.deadline).label}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* New Action Buttons */}
+                    <div className="flex gap-3 absolute -bottom-3 -right-3">
+                      <button>
+                        <Pencil className="w-4 h-4 text-blue-500" />
+                      </button>
+                      <button>
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
