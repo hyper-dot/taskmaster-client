@@ -1,10 +1,19 @@
 import React from "react";
 import Link from "next/link";
-import { CheckSquare } from "lucide-react";
+import { CheckSquare, Zap } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import LoginDialog from "../common/LoginDialog";
 import { getSession } from "@/actions/auth.actions";
-import { Button } from "../ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import LogoutAlert from "../common/LogoutAlert";
 
 export async function Navigation() {
   const { accessToken } = await getSession();
@@ -14,8 +23,10 @@ export async function Navigation() {
         <div className="flex justify-between h-16">
           {/* Logo and brand */}
           <Link href="/" className="flex items-center">
-            <CheckSquare className="w-8 h-8 text-blue-500" />
-            <span className="ml-2 text-xl font-bold">TaskMaster</span>
+            <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <span className="ml-2 text-2xl font-bold text-blue-600 dark:text-blue-400 hidden sm:inline">
+              Task Master
+            </span>
           </Link>
 
           <div className="flex items-center space-x-4 md:space-x-8">
@@ -23,11 +34,17 @@ export async function Navigation() {
             {!accessToken ? (
               <LoginDialog />
             ) : (
-              <div className="flex gap-2">
-                <Button>
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-                {/* <Button variant="destructive">Log Out</Button> */}
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarFallback
+                    title="Go to dashboard"
+                    className="cursor-pointer"
+                    asChild
+                  >
+                    <Link href="/dashboard">CN</Link>
+                  </AvatarFallback>
+                </Avatar>
+                <LogoutAlert />
               </div>
             )}
           </div>

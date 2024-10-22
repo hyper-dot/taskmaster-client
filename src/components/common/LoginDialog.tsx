@@ -16,9 +16,11 @@ import { useForm } from "react-hook-form";
 import { loginSchema, TLoginSchema } from "@/schema/auth.schema";
 import toast from "react-hot-toast";
 import { useLoginMutation } from "@/hooks/mutations/auth.mutation";
+import { useRouter } from "next/navigation";
 
 const LoginDialog: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
   const { mutateAsync, isPending } = useLoginMutation();
   const form = useForm<TLoginSchema>({ resolver: zodResolver(loginSchema) });
   const {
@@ -28,7 +30,7 @@ const LoginDialog: React.FC = () => {
   } = form;
 
   function onSubmit(data: TLoginSchema) {
-    const promise = mutateAsync(data);
+    const promise = mutateAsync(data).then(() => router.push("/dashboard"));
     toast.promise(promise, {
       success: "Login successfull",
       error: (err) => err.message,
@@ -39,7 +41,7 @@ const LoginDialog: React.FC = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Login</Button>
+        <Button id="login-dialog-button">Login</Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs">
         <DialogHeader>
