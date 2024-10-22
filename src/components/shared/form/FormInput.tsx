@@ -34,7 +34,7 @@ const FormInput = ({
                     ? "password"
                     : type
               }
-              className={cn(!!errors ? "border-destructive" : "")}
+              className={cn(!!errors ? "focus-visible:ring-destructive" : "")}
               {...register}
               placeholder={placeholder}
             />

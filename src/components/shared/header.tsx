@@ -1,10 +1,13 @@
 import React from "react";
+import Link from "next/link";
 import { CheckSquare } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import LoginDialog from "../common/LoginDialog";
-import Link from "next/link";
+import { getSession } from "@/actions/auth.actions";
+import { Button } from "../ui/button";
 
-export const Navigation: React.FC = () => {
+export async function Navigation() {
+  const { accessToken } = await getSession();
   return (
     <nav className="border-b">
       <div className="max-w-7xl mx-auto px-4">
@@ -17,10 +20,19 @@ export const Navigation: React.FC = () => {
 
           <div className="flex items-center space-x-4 md:space-x-8">
             <ThemeToggle />
-            <LoginDialog />
+            {!accessToken ? (
+              <LoginDialog />
+            ) : (
+              <div className="flex gap-2">
+                <Button>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                {/* <Button variant="destructive">Log Out</Button> */}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </nav>
   );
-};
+}

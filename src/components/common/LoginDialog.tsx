@@ -10,11 +10,32 @@ import {
 } from "@/components/ui/dialog";
 import FormInput from "../shared/form/FormInput";
 import { useState } from "react";
-import FormSubmitBtn from "../shared/form/FormSubmitBtn";
 import { Label } from "../ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { loginSchema, TLoginSchema } from "@/schema/auth.schema";
+import toast from "react-hot-toast";
+import { useLoginMutation } from "@/hooks/mutations/auth.mutation";
 
 const LoginDialog: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { mutateAsync, isPending } = useLoginMutation();
+  const form = useForm<TLoginSchema>({ resolver: zodResolver(loginSchema) });
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = form;
+
+  function onSubmit(data: TLoginSchema) {
+    const promise = mutateAsync(data);
+    toast.promise(promise, {
+      success: "Login successfull",
+      error: (err) => err.message,
+      loading: "Please wait...",
+    });
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -24,22 +45,31 @@ const LoginDialog: React.FC = () => {
         <DialogHeader>
           <DialogTitle>Login</DialogTitle>
         </DialogHeader>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-3">
             <div>
               <Label>Email</Label>
-              <FormInput placeholder="Enter Email Address" />
+              <FormInput
+                errors={errors.email}
+                register={register("email")}
+                placeholder="Enter Email Address"
+              />
             </div>
             <div>
               <Label>Password</Label>
-              <FormInput type="password" placeholder="Enter Password" />
+              <FormInput
+                errors={errors.password}
+                register={register("password")}
+                type="password"
+                placeholder="Enter Password"
+              />
             </div>
           </div>
 
           <DialogFooter className="mt-4">
-            <FormSubmitBtn isSubmitting className="w-full">
+            <Button disabled={isPending} className="w-full">
               Login
-            </FormSubmitBtn>
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

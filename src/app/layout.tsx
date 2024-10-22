@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { Footer } from "@/components/shared/footer";
 import { Navigation } from "@/components/shared/header";
+import QueryProvider from "@/providers/QueryProvider";
+import { CustomToaster } from "@/components/common/Toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -36,11 +38,14 @@ export default function RootLayout({
           defaultTheme="system"
           disableTransitionOnChange
         >
-          <main className="flex flex-col min-h-screen">
-            <Navigation />
-            <div className="flex-1">{children}</div>
-            <Footer />
-          </main>
+          <QueryProvider>
+            <main className="flex flex-col min-h-screen">
+              <Navigation />
+              <div className="flex-1">{children}</div>
+              <Footer />
+            </main>
+            <CustomToaster />
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
