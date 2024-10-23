@@ -1,5 +1,5 @@
 // Define types
-type TaskStatus = "pending" | "in-progress" | "completed";
+type TaskStatus = "todo" | "in-progress" | "completed";
 type TaskPriority = "high" | "medium" | "low";
 
 interface Task {

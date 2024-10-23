@@ -1,103 +1,33 @@
 "use client";
-import React, { useState } from "react";
-import {
-  CheckCircle2,
-  Circle,
-  Clock,
-  ClipboardX,
-  CalendarDays,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import React from "react";
+import { ClipboardX, CalendarDays, Pencil, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { SortBy } from "@/components/dashboard/SortBy";
 import { cn } from "@/lib/utils";
 import AddTaskDialog from "@/components/dashboard/AddTask";
-import { tasks as data } from "@/__data__/tasks";
+import { useGetTasks } from "@/hooks/query/task.query";
+import {
+  formatDeadline,
+  getDeadlineStatus,
+  getStatusBadgeColor,
+  getStatusIcon,
+  statusTransitions,
+} from "@/lib/task";
 
-type TaskStatus = "pending" | "in-progress" | "completed";
+type TaskStatus = "todo" | "in-progress" | "completed";
 
 interface Task {
   id: number;
   title: string;
   description: string;
-  status: TaskStatus;
-  deadline: string; // ISO string format
+  progress: TaskStatus;
+  dueDate: string;
 }
 
-type StatusTransitions = {
-  [K in TaskStatus]: TaskStatus;
-};
-
 const TaskManager: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(data as Task[]);
+  const { data } = useGetTasks();
 
-  const [activeFilter, setActiveFilter] = useState<TaskStatus | "all">("all");
-
-  const updateStatus = (taskId: number, newStatus: TaskStatus): void => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task,
-      ),
-    );
-  };
-
-  const getStatusIcon = (status: TaskStatus): JSX.Element => {
-    const icons: Record<TaskStatus, JSX.Element> = {
-      completed: <CheckCircle2 className="text-green-500" />,
-      "in-progress": <Clock className="text-blue-500" />,
-      pending: <Circle className="text-gray-500" />,
-    };
-    return icons[status];
-  };
-
-  const getStatusBadgeColor = (status: TaskStatus): string => {
-    const colors: Record<TaskStatus, string> = {
-      pending: "bg-orange-100 text-gray-700",
-      "in-progress": "bg-blue-100 text-blue-700",
-      completed: "bg-green-100 text-green-700",
-    };
-    return colors[status];
-  };
-
-  const getDeadlineStatus = (
-    deadline: string,
-  ): {
-    color: string;
-    label: string;
-  } => {
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const daysUntilDeadline = Math.ceil(
-      (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    if (daysUntilDeadline < 0) {
-      return { color: "text-red-400", label: "Overdue" };
-    } else if (daysUntilDeadline <= 3) {
-      return { color: "text-orange-500", label: "Due soon" };
-    } else {
-      return { color: "text-lime-600 dark:text-lime-200", label: "On track" };
-    }
-  };
-
-  const formatDeadline = (deadline: string): string => {
-    return new Date(deadline).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const statusTransitions: StatusTransitions = {
-    pending: "in-progress",
-    "in-progress": "completed",
-    completed: "pending",
-  };
-
-  const filteredTasks = tasks.filter(
-    (task) => activeFilter === "all" || task.status === activeFilter,
-  );
+  const updateStatus = (taskId: number, newStatus: TaskStatus): void => {};
 
   return (
     <div className="max-w-3xl mx-auto mb-4 md:my-10 px-4 w-full">
@@ -116,12 +46,12 @@ const TaskManager: React.FC = () => {
           {["all", "pending", "in-progress", "completed"].map((status) => (
             <button
               key={status}
-              onClick={() => setActiveFilter(status as TaskStatus | "all")}
+              // onClick={() => setActiveFiltef(status as TaskStatus | "all")}
               className={cn(
                 "px-4 py-1 text-sm md:text-base rounded-full font-medium transition-colors",
-                activeFilter === status
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary hover:bg-secondary/80",
+                // activeFilter === status
+                //   ? "bg-primary text-primary-foreground"
+                //   : "bg-secondary hover:bg-secondary/80",
               )}
             >
               {status === "all"
@@ -133,8 +63,8 @@ const TaskManager: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {filteredTasks.length ? (
-            filteredTasks.map((task: Task) => (
+          {data?.data?.length ? (
+            data?.data?.map((task: Task) => (
               <div
                 key={task.id}
                 className="p-6 border rounded-xl transition-all bg-secondary"
@@ -142,11 +72,11 @@ const TaskManager: React.FC = () => {
                 <div className="flex items-start gap-3 md:gap-4">
                   <button
                     onClick={() =>
-                      updateStatus(task.id, statusTransitions[task.status])
+                      updateStatus(task.id, statusTransitions[task.progress])
                     }
                     className="mt-1 hover:scale-110 transition-transform"
                   >
-                    {getStatusIcon(task.status)}
+                    {getStatusIcon(task.progress)}
                   </button>
 
                   <div className="flex-1 relative">
@@ -154,7 +84,7 @@ const TaskManager: React.FC = () => {
                       <h3
                         className={cn(
                           "text-lg font-medium",
-                          task.status === "completed" &&
+                          task.progress === "completed" &&
                             "line-through text-muted-foreground",
                         )}
                       >
@@ -163,11 +93,11 @@ const TaskManager: React.FC = () => {
                       <span
                         className={cn(
                           "py-[0.1rem] px-2 md:px-4 md:py-1 text-xs absolute sm:static -top-5 -right-3 rounded-full whitespace-nowrap md:text-sm font-medium",
-                          getStatusBadgeColor(task.status),
+                          getStatusBadgeColor(task.progress),
                         )}
                       >
-                        {task.status.charAt(0).toUpperCase() +
-                          task.status.slice(1).replace("-", " ")}
+                        {task.progress?.charAt(0).toUpperCase() +
+                          task.progress?.slice(1).replace("-", " ")}
                       </span>
                     </div>
 
@@ -178,7 +108,7 @@ const TaskManager: React.FC = () => {
                     <div
                       className={cn(
                         "flex items-center gap-2 mt-3",
-                        task.status === "completed"
+                        task.progress === "completed"
                           ? "line-through text-muted-foreground"
                           : "",
                       )}
@@ -186,23 +116,23 @@ const TaskManager: React.FC = () => {
                       <CalendarDays
                         className={cn(
                           "w-4 h-4",
-                          getDeadlineStatus(task.deadline).color,
-                          task.status === "completed"
+                          getDeadlineStatus(task.dueDate).color,
+                          task.progress === "completed"
                             ? "text-muted-foreground"
                             : "",
                         )}
                       />
                       <span className="text-sm">
-                        {formatDeadline(task.deadline)}
+                        {formatDeadline(task.dueDate)}
                       </span>
-                      {task.status !== "completed" && (
+                      {task.progress !== "completed" && (
                         <span
                           className={cn(
                             "text-sm ml-2",
-                            getDeadlineStatus(task.deadline).color,
+                            getDeadlineStatus(task.dueDate).color,
                           )}
                         >
-                          • {getDeadlineStatus(task.deadline).label}
+                          • {getDeadlineStatus(task.dueDate).label}
                         </span>
                       )}
                     </div>
