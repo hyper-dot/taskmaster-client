@@ -1,14 +1,17 @@
 "use client";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import RegisterDialog from "@/components/dashboard/RegisterDialog";
+import { useSession } from "@/providers/SessionProvider";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function LandingPage() {
+  const { accessToken } = useSession();
+
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-br from-blue-100 via-white to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <header className="px-4 lg:px-6 h-14 flex items-center"></header>
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-blue-100 via-white to-purple-100 dark:from-transparent dark:to-transparent dark:via-indigo-900/10 ">
       <main className="flex-1 flex flex-col items-center justify-center px-4 text-center">
         <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl mb-8 text-gray-900 dark:text-white">
           Master Your Tasks,
@@ -34,7 +37,13 @@ export default function LandingPage() {
             </Card>
           ))}
         </div>
-        <RegisterDialog />
+        {accessToken ? (
+          <Button asChild>
+            <Link href="/dashboard">Go to Dashboard</Link>
+          </Button>
+        ) : (
+          <RegisterDialog />
+        )}
       </main>
     </div>
   );
