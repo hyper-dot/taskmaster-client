@@ -4,11 +4,13 @@ import { Zap } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import LoginDialog from "../dashboard/LoginDialog";
 import { getSession } from "@/actions/auth.actions";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import LogoutAlert from "../common/LogoutAlert";
+import UserAvatar from "./user-avatar";
 
 export async function Navigation() {
-  const { accessToken } = await getSession();
+  const { accessToken, refreshToken } = await getSession();
+  const isNotAuthencticated = !accessToken && !refreshToken;
+
   return (
     <nav className="border-b">
       <div className="max-w-7xl mx-auto px-4">
@@ -23,19 +25,11 @@ export async function Navigation() {
 
           <div className="flex items-center space-x-4 md:space-x-8">
             <ThemeToggle />
-            {!accessToken ? (
+            {isNotAuthencticated ? (
               <LoginDialog />
             ) : (
               <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarFallback
-                    title="Go to dashboard"
-                    className="cursor-pointer"
-                    asChild
-                  >
-                    <Link href="/dashboard">CN</Link>
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar />
                 <LogoutAlert />
               </div>
             )}

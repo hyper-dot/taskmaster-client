@@ -8,7 +8,8 @@ import { axiosInstance } from "@/lib/axios";
 import axios, { AxiosError } from "axios";
 import { TLoginSchema } from "@/schema/auth.schema";
 
-const EXPIRES = new Date(Date.now() + 15 * 60 * 1000);
+const accessExpires = new Date(Date.now() + 15 * 60 * 1000);
+const refreshExpires = new Date(Date.now() + 2 * 60 * 60 * 1000);
 
 // SERVER ACTION FOR LOGGING OUT
 export async function logout() {
@@ -24,36 +25,6 @@ export async function getSession() {
   return { accessToken, refreshToken };
 }
 
-// SERVER ACTION FOR UPDATING SESSION IN MIDDLEWARE
-export async function updateSession(req: NextRequest) {
-  const refreshToken = req.cookies.get("refresh")?.value;
-  const accessToken = req.cookies.get("token")?.value;
-
-  if (!accessToken || !refreshToken) {
-    return handleUnauthorized(req);
-  }
-
-  try {
-    const { data } = await axios.post(
-      process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/refresh",
-      {
-        refreshToken,
-      },
-    );
-    const response = NextResponse.next();
-    response.cookies.set("token", data.data.accessToken, {
-      expires: EXPIRES,
-      secure: true,
-    });
-    return response;
-  } catch (err) {
-    if (err instanceof AxiosError) {
-      console.log(err.response?.data);
-    }
-    return handleUnauthorized(req);
-  }
-}
-
 // SERVER ACTION FOR REFRESHING THE TOKEN
 export async function refreshToken() {
   try {
@@ -65,8 +36,9 @@ export async function refreshToken() {
         refreshToken,
       });
       cookieJar.set("token", data?.data?.accessToken, {
-        expires: EXPIRES,
+        expires: accessExpires,
         secure: true,
+        httpOnly: true,
       });
     }
     return true;
@@ -118,11 +90,15 @@ export const login = async (payload: TLoginSchema): Promise<TResponse> => {
       const data = await res.json();
       cookies().set("token", data?.data?.accessToken, {
         secure: true,
-        expires: EXPIRES,
+        expires: accessExpires,
+        httpOnly: true,
       });
-      cookies().set("refresh", data?.data?.refreshToken, { secure: true });
+      cookies().set("refresh", data?.data?.refreshToken, {
+        secure: true,
+        expires: refreshExpires,
+        httpOnly: true,
+      });
       revalidatePath("/", "layout");
-
       return {
         code: res.status,
         message: "You have been loggedin successfully !!",
