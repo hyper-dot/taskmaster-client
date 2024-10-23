@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import RegisterDialog from "@/components/dashboard/RegisterDialog";
 
 export default function LandingPage() {
   return (
@@ -33,7 +34,7 @@ export default function LandingPage() {
             </Card>
           ))}
         </div>
-        <Button size="lg">Get Started</Button>
+        <RegisterDialog />
       </main>
     </div>
   );

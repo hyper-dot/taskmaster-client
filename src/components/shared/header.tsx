@@ -1,18 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { CheckSquare, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
-import LoginDialog from "../common/LoginDialog";
+import LoginDialog from "../dashboard/LoginDialog";
 import { getSession } from "@/actions/auth.actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import LogoutAlert from "../common/LogoutAlert";
 
 export async function Navigation() {

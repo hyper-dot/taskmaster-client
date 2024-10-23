@@ -68,6 +68,17 @@ const LoginDialog: React.FC = () => {
             </div>
           </div>
 
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              document.getElementById("register-dialog-button")?.click();
+            }}
+            type="button"
+            className="text-sm underline block mt-2"
+          >
+            Don't have an account ?
+          </button>
+
           <DialogFooter className="mt-4">
             <Button disabled={isPending} className="w-full">
               Login

@@ -2,7 +2,7 @@ import { login } from "@/actions/auth.actions";
 import { axiosInstance } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useRegisterUser = () => {
+export const useRegisterMutation = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       return await axiosInstance.post("/user", payload);
