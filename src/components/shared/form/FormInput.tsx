@@ -9,18 +9,21 @@ import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
+// Extend the component to accept all input props using InputHTMLAttributes
 const FormInput = ({
   type,
   errors,
   register,
   placeholder,
+  ...props // Accept all other props
 }: {
-  type?: "number" | "text" | "password";
+  type?: "number" | "text" | "password" | "date";
   errors: any;
   register: any;
   placeholder?: string;
-}) => {
+} & React.InputHTMLAttributes<HTMLInputElement>) => {
   const [view, setView] = useState(false);
+
   return (
     <TooltipProvider>
       <Tooltip open={!!errors}>
@@ -34,9 +37,13 @@ const FormInput = ({
                     ? "password"
                     : type
               }
-              className={cn(!!errors ? "focus-visible:ring-destructive" : "")}
+              className={cn(
+                !!errors ? "focus-visible:ring-destructive" : "",
+                type === "date" ? "relative" : "",
+              )}
               {...register}
               placeholder={placeholder}
+              {...props} // Spread the rest of the input props here
             />
             {type === "password" && (
               <button

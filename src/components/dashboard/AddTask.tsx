@@ -8,16 +8,53 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
-import { DatePicker } from "./DatePicker";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { taskSchema, TTaskSchema } from "@/schema/task.schema";
+import FormInput from "../shared/form/FormInput";
+import FormTextarea from "../shared/form/FormTextArea";
+import { useState } from "react";
+import { useAddTask } from "@/hooks/mutations/task.mutation";
+import toast from "react-hot-toast";
 
 const AddTaskDialog = () => {
+  const [open, setOpen] = useState(false);
+  const [today] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
+
+  const form = useForm<TTaskSchema>({ resolver: zodResolver(taskSchema) });
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = form;
+
+  const { mutateAsync, isPending } = useAddTask();
+
+  function onSubmit(data: TTaskSchema) {
+    const promise = mutateAsync(data).then(() => {
+      reset();
+      setOpen(false);
+    });
+    toast.promise(promise, {
+      loading: "Adding task...",
+      success: "Task added successfully",
+      error: (err) => err.message || "Something went wrong",
+    });
+    console.log(data);
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <CalendarIcon className="w-4 h-4" />
@@ -31,26 +68,40 @@ const AddTaskDialog = () => {
             Create a new task by filling out the details below.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-3 pb-4">
+        <form
+          id="add-task-form"
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid gap-3 pb-4"
+        >
           <div>
             <Label htmlFor="title" className="text-right">
               Title
             </Label>
-            <Input
-              id="title"
+            <FormInput
+              type="text"
+              register={register("title")}
+              errors={errors.title}
               placeholder="Enter task title"
-              className="col-span-3"
             />
           </div>
           <div>
             <Label htmlFor="description" className="text-right">
               Description
             </Label>
-            <Textarea id="description" placeholder="Enter task description" />
+            <FormTextarea
+              register={register("description")}
+              errors={errors.description}
+              placeholder="Enter description"
+            />
           </div>
           <div>
             <Label className="text-right">Deadline</Label>
-            <DatePicker />
+            <FormInput
+              min={today}
+              type="date"
+              register={register("dueDate")}
+              errors={errors.dueDate}
+            />
           </div>
           <div>
             <Label className="text-right">Status</Label>
@@ -69,9 +120,14 @@ const AddTaskDialog = () => {
               </div>
             </RadioGroup>
           </div>
-        </div>
+        </form>
         <DialogFooter>
-          <Button type="submit" className="w-full">
+          <Button
+            disabled={isPending}
+            form="add-task-form"
+            type="submit"
+            className="w-full"
+          >
             Create Task
           </Button>
         </DialogFooter>

@@ -83,3 +83,8 @@ body {
   border-radius: 100px !important;
   padding: 4px 10px !important;
 }
+
+/* Style the date input */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply absolute right-3;
+}
