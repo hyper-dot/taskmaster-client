@@ -9,6 +9,7 @@ const Search = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("searchQuery");
+  const newSearchParams = new URLSearchParams(searchParams);
 
   const [searchTerm, setSearchTerm] = useState(query || "");
 
@@ -16,7 +17,6 @@ const Search = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (!searchTerm) return;
-      const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.set("searchQuery", searchTerm);
       router.push(`?${newSearchParams.toString()}`);
     }, DEBOUNCE_DELAY);
@@ -32,10 +32,9 @@ const Search = () => {
   }
 
   function handleClearSearch() {
-    const newSearchParams = new URLSearchParams(searchParams);
-    setSearchTerm("");
-    newSearchParams.delete("searchQuery", searchTerm);
+    newSearchParams.delete("searchQuery");
     router.push(`?${newSearchParams.toString()}`);
+    setSearchTerm("");
   }
 
   return (
@@ -46,7 +45,7 @@ const Search = () => {
         placeholder="Search tasks..."
         className="md:flex-1"
       />
-      {!!searchTerm && (
+      {!!query && (
         <CircleX
           role="button"
           onClick={handleClearSearch}
