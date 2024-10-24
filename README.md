@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Taskmaster Documentation
+
+## Overview
+
+**Taskmaster** is a task management application built with Next.js. It enables users to efficiently create and manage tasks in a user-friendly interface. This documentation provides a comprehensive guide on the application's architecture, setup, features, and usage.
+
+## Table of Contents
+
+1. [Technologies Used](#technologies-used)
+2. [Getting Started](#getting-started)
+3. [API Setup](#api-setup)
+4. [Environment Variables](#environment-variables)
+5. [Application Features](#application-features)
+6. [Usage](#usage)
+
+## Technologies Used
+
+- **Next.js**: A React framework for building server-rendered applications.
+- **React**: A JavaScript library for building user interfaces.
+- **Tailwind CSS**: A utility-first CSS framework for styling.
+- **ShadCN UI**: A set of components for building UI faster and more efficiently.
 
 ## Getting Started
 
-First, run the development server:
+To get started with Taskmaster, follow these steps:
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm (Node package manager) or Yarn
+
+### 1. Clone the Repository
+
+First, clone the Taskmaster client repository:
+
+```bash
+git clone https://github.com/your-username/taskmaster-client.git
+cd taskmaster-client
+```
+
+### 2. Install Dependencies
+
+Run the following command to install the required dependencies:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Start the Development Server
+
+To start the development server, use the following command:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Your application will be accessible at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Before using the Taskmaster application, you need to set up the Taskmaster API. For detailed instructions on setting up the API, please refer to the [Taskmaster API README](https://github.com/hyper-dot/taskmaster-server).
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+In the Next.js application, you need to define the following environment variable in a `.env.local` file:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```plaintext
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This variable allows the Next.js app to communicate with the Taskmaster API.
 
-## Deploy on Vercel
+## Application Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- User authentication (login/signup)
+- Task creation and management
+- Task status tracking (pending, in progress, completed)
+- Responsive design for mobile and desktop
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Usage
+
+1. **Access the Application:**
+   Open your web browser and navigate to [http://localhost:3000](http://localhost:3000).
+
+2. **Authentication:**
+   - Users can register and log in to access the application.
+   - Use the credentials to log in and manage tasks.
+
+3. **Task Management:**
+   - Create new tasks with details like title, description, and due date.
+   - Edit and delete tasks as needed.
+   - Track the progress of tasks.
+
