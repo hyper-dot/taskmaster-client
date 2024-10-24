@@ -9,6 +9,7 @@ import { useGetTasks } from "@/hooks/query/task.query";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import TaskCard from "@/components/dashboard/TaskCard";
+import Search from "@/components/dashboard/Search";
 
 type TaskStatus = "todo" | "in_progress" | "completed";
 
@@ -33,7 +34,7 @@ const TaskManager: React.FC = () => {
         <div className="flex justify-between items-center"></div>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <Input placeholder="Search tasks..." className="md:flex-1" />
+          <Search />
           <div className="flex gap-4">
             <SortBy />
             <AddTaskDialog />

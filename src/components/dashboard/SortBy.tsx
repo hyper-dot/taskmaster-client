@@ -1,5 +1,4 @@
-import * as React from "react";
-
+"use client";
 import {
   Select,
   SelectContent,
@@ -7,16 +6,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const options = [
-  { label: "Date", value: "date" },
-  { label: "Status", value: "status" },
-  { label: "Priority", value: "priority" },
+const allOptions = [
+  { label: "Date", value: "createdAt" },
+  { label: "Progress", value: "progress" },
+  { label: "Priority", value: "dueDate" },
 ];
 
 export function SortBy() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const progress = searchParams.get("progress");
+
+  const options = progress
+    ? allOptions.filter((o) => o.value !== "status")
+    : allOptions;
+
+  const handleChange = () => {};
+
   return (
-    <Select>
+    <Select
+      onValueChange={(val) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set("sortBy", val);
+        router.push(`?${newSearchParams}`);
+      }}
+    >
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Sort By" />
       </SelectTrigger>

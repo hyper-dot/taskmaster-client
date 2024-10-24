@@ -38,6 +38,8 @@ const DeadLineStatus = ({
     });
   };
 
+  const deadlineStatus = getDeadlineStatus(dueDate); // Cache the result
+
   return (
     <div
       className={cn(
@@ -48,14 +50,15 @@ const DeadLineStatus = ({
       <CalendarDays
         className={cn(
           "w-4 h-4",
-          getDeadlineStatus(dueDate).color,
-          progress === "completed" ? "text-muted-foreground" : "",
+          progress === "completed"
+            ? "text-muted-foreground"
+            : deadlineStatus.color,
         )}
       />
       <span className="text-sm">{formatDeadline(dueDate)}</span>
       {progress !== "completed" && (
-        <span className={cn("text-sm ml-2", getDeadlineStatus(dueDate).color)}>
-          • {getDeadlineStatus(dueDate).label}
+        <span className={cn("text-sm ml-2", deadlineStatus.color)}>
+          • {deadlineStatus.label}
         </span>
       )}
     </div>
