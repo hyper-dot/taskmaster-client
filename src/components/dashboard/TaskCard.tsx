@@ -30,7 +30,7 @@ const TaskCard = ({ task }: { task: Task }) => {
   return (
     <div
       key={task.id}
-      className="p-6 border rounded-xl transition-all bg-secondary"
+      className="py-[1.7rem] pb-8 px-5 border rounded-xl transition-all bg-secondary"
     >
       <div className="flex items-start gap-3 md:gap-4">
         <button
@@ -63,7 +63,7 @@ const TaskCard = ({ task }: { task: Task }) => {
           <DeadLineStatus progress={task.progress} dueDate={task.dueDate} />
 
           {/* New Action Buttons */}
-          <div className="flex gap-3 absolute -bottom-3 -right-3">
+          <div className="flex gap-3 absolute -bottom-6 -right-3">
             <button>
               <Pencil className="w-4 h-4 text-blue-500" />
             </button>
