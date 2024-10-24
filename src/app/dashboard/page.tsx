@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { ClipboardX } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { SortBy } from "@/components/dashboard/SortBy";
 import { cn } from "@/lib/utils";
 import AddTaskDialog from "@/components/dashboard/AddTask";
@@ -10,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import TaskCard from "@/components/dashboard/TaskCard";
 import Search from "@/components/dashboard/Search";
+import Skeleton from "@/components/ui/skeleton";
 
 type TaskStatus = "todo" | "in_progress" | "completed";
 
@@ -26,7 +26,7 @@ const TaskManager: React.FC = () => {
   const router = useRouter();
   const currentStatus = searchParams.get("progress");
 
-  const { data } = useGetTasks(searchParams);
+  const { data, isLoading } = useGetTasks(searchParams);
 
   return (
     <div className="max-w-3xl mx-auto mb-4 md:my-10 px-4 w-full">
@@ -67,9 +67,14 @@ const TaskManager: React.FC = () => {
             </button>
           ))}
         </div>
+        {}
 
         <div className="space-y-4">
-          {data?.length ? (
+          {isLoading ? (
+            Array.from({ length: 10 }).map((_, idx) => (
+              <Skeleton key={idx} className="h-[9.6rem] rounded-xl" />
+            ))
+          ) : data?.length ? (
             data?.map((task: Task) => <TaskCard key={task.id} task={task} />)
           ) : (
             <div className="w-full mt-10 md:mt-16 flex flex-col items-center justify-center">
