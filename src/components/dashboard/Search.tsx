@@ -31,7 +31,7 @@ const Search = () => {
 
   return (
     <Input
-      defaultValue={query || ""}
+      // defaultValue={query || ""}
       value={searchTerm}
       onChange={handleSearch}
       placeholder="Search tasks..."

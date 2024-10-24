@@ -1,7 +1,8 @@
-import { refreshToken } from "@/actions/auth.actions";
-import { useSession } from "@/providers/SessionProvider";
+import { logout, refreshToken } from "@/actions/auth.actions";
+import { useSession } from "@/providers/SessionProvider"; // Added updateSession to handle accessToken update
 import axios from "axios";
 
+// Axios instance creation with default settings
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 5000,
@@ -11,72 +12,42 @@ export const axiosInstance = axios.create({
 });
 
 export function useApiClient() {
-  const { accessToken } = useSession();
+  const { accessToken } = useSession(); // Retrieve accessToken from the session
+
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     timeout: 5000,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`, // Use initial accessToken
     },
   });
 
-  let isRefreshing = false;
-  let failedQueue: any[] = [];
-
-  const processQueue = (error: any = null) => {
-    failedQueue.forEach((prom) => {
-      if (error) {
-        prom.reject(error);
-      } else {
-        prom.resolve();
-      }
-    });
-    failedQueue = [];
-  };
-
+  // Add a response interceptor to handle 401 errors
   instance.interceptors.response.use(
-    (response) => response.data,
+    (response) => response.data, // Return the response if successful
     async (error) => {
-      const originalRequest = error.config;
-
-      // Handle server error response
-      if (error.response?.data?.error) {
-        throw new Error(error.response.data.error);
-      }
-
-      // Handle 401 and token refresh
+      const originalRequest = error.config; // Save the original request
       if (error.response?.status === 401 && !originalRequest._retry) {
-        if (isRefreshing) {
-          return new Promise((resolve, reject) => {
-            failedQueue.push({ resolve, reject });
+        originalRequest._retry = true; // Mark request to avoid infinite loop
+
+        refreshToken()
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return instance(originalRequest);
           })
-            .then(() => instance.request(originalRequest))
-            .catch((err) => Promise.reject(err));
-        }
-
-        originalRequest._retry = true;
-        isRefreshing = true;
-
-        try {
-          await refreshToken();
-          processQueue();
-          isRefreshing = false;
-          return instance.request(originalRequest);
-        } catch (refreshError) {
-          processQueue(refreshError);
-          isRefreshing = false;
-          document.getElementById("login-dialog-button")?.click();
-          return Promise.reject(refreshError);
-        }
+          .catch((tokenError) => {
+            logout();
+            return Promise.reject(
+              (tokenError as any).response?.data?.error ||
+                "Token refresh failed",
+            );
+          });
       }
 
-      // If no specific error format, throw the original error
-      return Promise.reject(
-        error.response?.data?.error ||
-          error.message ||
-          "An unexpected error occurred",
-      );
+      // Extract the error message from the response and reject with that
+      const errorMessage = error.response?.data?.error || "An error occurred";
+      return Promise.reject(errorMessage);
     },
   );
 

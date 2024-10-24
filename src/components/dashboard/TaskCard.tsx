@@ -4,6 +4,7 @@ import { CheckCircle2, Circle, Clock, Pencil, Trash2 } from "lucide-react";
 import DeadLineStatus from "./DeadLineStatus";
 import { useDeleteTask } from "@/hooks/mutations/task.mutation";
 import toast from "react-hot-toast";
+import EditTaskDialog from "./EditTask";
 
 const TaskCard = ({ task }: { task: Task }) => {
   const { mutateAsync } = useDeleteTask();
@@ -64,9 +65,7 @@ const TaskCard = ({ task }: { task: Task }) => {
 
           {/* New Action Buttons */}
           <div className="flex gap-3 absolute -bottom-6 -right-3">
-            <button>
-              <Pencil className="w-4 h-4 text-blue-500" />
-            </button>
+            <EditTaskDialog task={task} />
             <button
               onClick={() => {
                 deleteTask(task.id);

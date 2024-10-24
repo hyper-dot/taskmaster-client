@@ -1,4 +1,5 @@
-export function getInitials(fullName: string): string {
+export function getInitials(fullName: string) {
+  if (!fullName) return;
   const nameParts = fullName.split(" ");
 
   // If the name consists of only one part, return the first initial

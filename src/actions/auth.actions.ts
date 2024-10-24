@@ -1,11 +1,8 @@
 "use server";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { handleUnauthorized } from "@/lib/auth";
 import { axiosInstance } from "@/lib/axios";
-import axios, { AxiosError } from "axios";
 import { TLoginSchema } from "@/schema/auth.schema";
 
 const accessExpires = new Date(Date.now() + 15 * 60 * 1000);
@@ -27,6 +24,7 @@ export async function getSession() {
 
 // SERVER ACTION FOR REFRESHING THE TOKEN
 export async function refreshToken() {
+  console.log("REFRESIING THE TOKEN......");
   try {
     const cookieJar = cookies();
     const refreshToken = cookieJar.get("refresh")?.value;
@@ -35,13 +33,14 @@ export async function refreshToken() {
       const { data } = await axiosInstance.post("/auth/refresh", {
         refreshToken,
       });
+      console.log("REFRESH TOKEN DATA", data);
       cookieJar.set("token", data?.data?.accessToken, {
         expires: accessExpires,
         secure: true,
         httpOnly: true,
       });
+      return data.data.accessToken;
     }
-    return true;
   } catch (err) {
     console.log("ERROR WHILE REFRESHING TOKEN", err);
   }
