@@ -1,13 +1,21 @@
 import { cn } from "@/lib/utils";
 import StatusBadge from "./StatusBadge";
-import { CheckCircle2, Circle, Clock, Pencil, Trash2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Clock,
+  Loader2,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import DeadLineStatus from "./DeadLineStatus";
-import { useDeleteTask } from "@/hooks/mutations/task.mutation";
+import { useDeleteTask, useEditTask } from "@/hooks/mutations/task.mutation";
 import toast from "react-hot-toast";
 import EditTaskDialog from "./EditTask";
 
 const TaskCard = ({ task }: { task: Task }) => {
   const { mutateAsync } = useDeleteTask();
+  const updateMutation = useEditTask(task.id);
 
   const getStatusIcon = (status: TaskStatus): JSX.Element => {
     const icons: Record<TaskStatus, JSX.Element> = {
@@ -18,7 +26,13 @@ const TaskCard = ({ task }: { task: Task }) => {
     return icons[status];
   };
 
-  function updateStatus(taskId: number, newStatus: TaskStatus): void {}
+  async function updateStatus(progress: TaskStatus) {
+    try {
+      await updateMutation.mutateAsync({ progress });
+    } catch (err: any) {
+      toast.error(err.message || "Couldn't update task status");
+    }
+  }
 
   function deleteTask(taskId: number) {
     toast.promise(mutateAsync(taskId), {
@@ -28,6 +42,12 @@ const TaskCard = ({ task }: { task: Task }) => {
     });
   }
 
+  const statusTransitions: StatusTransitions = {
+    todo: "in_progress",
+    in_progress: "completed",
+    completed: "todo",
+  };
+
   return (
     <div
       key={task.id}
@@ -35,12 +55,15 @@ const TaskCard = ({ task }: { task: Task }) => {
     >
       <div className="flex items-start gap-3 md:gap-4">
         <button
-          // onClick={() =>
-          //   updateStatus(task.id, statusTransitions[task.progress])
-          // }
+          disabled={updateMutation.isPending}
+          onClick={() => updateStatus(statusTransitions[task.progress])}
           className="mt-1 hover:scale-110 transition-transform"
         >
-          {getStatusIcon(task.progress)}
+          {updateMutation.isPending ? (
+            <Loader2 className="animate-spin text-muted-foreground" />
+          ) : (
+            getStatusIcon(task.progress)
+          )}
         </button>
 
         <div className="flex-1 relative">

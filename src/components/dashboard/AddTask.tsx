@@ -56,7 +56,7 @@ const AddTaskDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2 w-full">
           <CalendarIcon className="w-4 h-4" />
           Add Task
         </Button>

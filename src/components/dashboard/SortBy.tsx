@@ -9,9 +9,9 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 
 const allOptions = [
-  { label: "Date", value: "createdAt" },
+  { label: "Date added", value: "createdAt" },
   { label: "Progress", value: "progress" },
-  { label: "Priority", value: "dueDate" },
+  { label: "Priority (high to low)", value: "dueDate" },
 ];
 
 export function SortBy() {
@@ -23,8 +23,6 @@ export function SortBy() {
     ? allOptions.filter((o) => o.value !== "status")
     : allOptions;
 
-  const handleChange = () => {};
-
   return (
     <Select
       onValueChange={(val) => {
@@ -33,7 +31,7 @@ export function SortBy() {
         router.push(`?${newSearchParams}`);
       }}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="md:w-[180px]">
         <SelectValue placeholder="Sort By" />
       </SelectTrigger>
       <SelectContent>
