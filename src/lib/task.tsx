@@ -3,7 +3,7 @@ import { CheckCircle2, Circle, Clock } from "lucide-react";
 export const getStatusIcon = (status: TaskStatus): JSX.Element => {
   const icons: Record<TaskStatus, JSX.Element> = {
     completed: <CheckCircle2 className="text-green-500" />,
-    "in-progress": <Clock className="text-blue-500" />,
+    in_progress: <Clock className="text-blue-500" />,
     todo: <Circle className="text-gray-500" />,
   };
   return icons[status];
@@ -12,7 +12,7 @@ export const getStatusIcon = (status: TaskStatus): JSX.Element => {
 export const getStatusBadgeColor = (status: TaskStatus): string => {
   const colors: Record<TaskStatus, string> = {
     todo: "bg-orange-100 text-gray-700",
-    "in-progress": "bg-blue-100 text-blue-700",
+    in_progress: "bg-blue-100 text-blue-700",
     completed: "bg-green-100 text-green-700",
   };
   return colors[status];
@@ -45,14 +45,4 @@ export const formatDeadline = (deadline: string): string => {
     month: "short",
     day: "numeric",
   });
-};
-
-type StatusTransitions = {
-  [K in TaskStatus]: TaskStatus;
-};
-
-export const statusTransitions: StatusTransitions = {
-  todo: "in-progress",
-  "in-progress": "completed",
-  completed: "pending",
 };

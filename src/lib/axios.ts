@@ -21,9 +21,7 @@ export function useApiClient() {
     },
   });
 
-  // Flag to prevent multiple refresh attempts
   let isRefreshing = false;
-  // Store pending requests
   let failedQueue: any[] = [];
 
   const processQueue = (error: any = null) => {
@@ -38,13 +36,18 @@ export function useApiClient() {
   };
 
   instance.interceptors.response.use(
-    (response) => response,
+    (response) => response.data,
     async (error) => {
       const originalRequest = error.config;
 
+      // Handle server error response
+      if (error.response?.data?.error) {
+        throw new Error(error.response.data.error);
+      }
+
+      // Handle 401 and token refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
-          // If refreshing, add request to queue
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
           })
@@ -63,12 +66,17 @@ export function useApiClient() {
         } catch (refreshError) {
           processQueue(refreshError);
           isRefreshing = false;
-          // Redirect to login on refresh failure
           document.getElementById("login-dialog-button")?.click();
           return Promise.reject(refreshError);
         }
       }
-      return Promise.reject(error);
+
+      // If no specific error format, throw the original error
+      return Promise.reject(
+        error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred",
+      );
     },
   );
 

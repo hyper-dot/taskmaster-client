@@ -7,7 +7,7 @@ import { getInitials } from "@/lib/user";
 
 const UserAvatar = () => {
   const { data } = useProfileQuery();
-  const user = data?.data;
+
   return (
     <Avatar>
       <AvatarFallback
@@ -15,9 +15,7 @@ const UserAvatar = () => {
         className="cursor-pointer"
         asChild
       >
-        <Link href="/dashboard">
-          {data?.data ? getInitials(user.name) : ""}
-        </Link>
+        <Link href="/dashboard">{data ? getInitials(data.name) : ""}</Link>
       </AvatarFallback>
     </Avatar>
   );

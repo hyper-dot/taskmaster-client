@@ -1,12 +1,12 @@
 // Define types
-type TaskStatus = "todo" | "in-progress" | "completed";
-type TaskPriority = "high" | "medium" | "low";
+type TaskStatus = "todo" | "in_progress" | "completed";
 
 interface Task {
   id: number;
   title: string;
-  status: TaskStatus;
-  priority: TaskPriority;
+  description: string;
+  progress: TaskStatus;
+  dueDate: string;
 }
 
 // Status transition map type

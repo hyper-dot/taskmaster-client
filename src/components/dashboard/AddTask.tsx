@@ -35,6 +35,7 @@ const AddTaskDialog = () => {
     handleSubmit,
     register,
     reset,
+    setValue,
     formState: { errors },
   } = form;
 
@@ -50,7 +51,6 @@ const AddTaskDialog = () => {
       success: "Task added successfully",
       error: (err) => err.message || "Something went wrong",
     });
-    console.log(data);
   }
 
   return (
@@ -105,14 +105,18 @@ const AddTaskDialog = () => {
           </div>
           <div>
             <Label className="text-right">Status</Label>
-            <RadioGroup defaultValue="todo" className="flex gap-4">
+            <RadioGroup
+              defaultValue="todo"
+              className="flex gap-4"
+              onValueChange={(val) => setValue("progress", val as TaskStatus)}
+            >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="todo" id="todo" />
                 <Label htmlFor="todo">To Do</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="inprogress" id="inprogress" />
-                <Label htmlFor="inprogress">In Progress</Label>
+                <RadioGroupItem value="in_progress" id="in_progress" />
+                <Label htmlFor="in_progress">In Progress</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="completed" id="completed" />
