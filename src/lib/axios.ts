@@ -1,10 +1,11 @@
 import { logout, refreshToken } from "@/actions/auth.actions";
+import { API_URL } from "@/constants";
 import { useSession } from "@/providers/SessionProvider"; // Added updateSession to handle accessToken update
 import axios from "axios";
 
 // Axios instance creation with default settings
 export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_URL,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -15,7 +16,7 @@ export function useApiClient() {
   const { accessToken } = useSession(); // Retrieve accessToken from the session
 
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: API_URL,
     timeout: 5000,
     headers: {
       "Content-Type": "application/json",
