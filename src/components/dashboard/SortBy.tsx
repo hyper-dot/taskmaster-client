@@ -31,7 +31,7 @@ export function SortBy() {
         router.push(`?${newSearchParams}`);
       }}
     >
-      <SelectTrigger className="md:w-[180px]">
+      <SelectTrigger className="md:min-w-[180px]">
         <SelectValue placeholder="Sort By" />
       </SelectTrigger>
       <SelectContent>
