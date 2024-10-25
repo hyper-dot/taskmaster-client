@@ -52,7 +52,7 @@ const FormInput = ({
                 className="absolute right-[2px] bottom-[2px] rounded-md h-[90%] px-1"
                 tabIndex={-1}
               >
-                {view ? <Eye size={18} /> : <EyeOff size={18} />}
+                {!view ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             )}
           </div>
