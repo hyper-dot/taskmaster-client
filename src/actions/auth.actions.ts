@@ -6,7 +6,7 @@ import { axiosInstance } from "@/lib/axios";
 import { TLoginSchema } from "@/schema/auth.schema";
 
 const accessExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
-const refreshExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
+const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 day
 
 // SERVER ACTION FOR LOGGING OUT
 export async function logout() {
