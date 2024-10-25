@@ -14,7 +14,6 @@ import {
 import { ReactNode } from "react";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
-import { LogOut } from "lucide-react";
 
 const LogoutAlert = ({ children }: { children?: ReactNode }) => {
   return (

@@ -1,17 +1,11 @@
 import { cn } from "@/lib/utils";
 import StatusBadge from "./StatusBadge";
-import {
-  CheckCircle2,
-  Circle,
-  Clock,
-  Loader2,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { CheckCircle2, Circle, Clock, Loader2, Trash2 } from "lucide-react";
 import DeadLineStatus from "./DeadLineStatus";
 import { useDeleteTask, useEditTask } from "@/hooks/mutations/task.mutation";
 import toast from "react-hot-toast";
 import EditTaskDialog from "./EditTask";
+import DeleteAlert from "../common/DeleteAlert";
 
 const TaskCard = ({ task }: { task: Task }) => {
   const { mutateAsync } = useDeleteTask();
@@ -89,13 +83,11 @@ const TaskCard = ({ task }: { task: Task }) => {
           {/* New Action Buttons */}
           <div className="flex gap-3 absolute -bottom-6 -right-3">
             <EditTaskDialog task={task} />
-            <button
-              onClick={() => {
-                deleteTask(task.id);
-              }}
-            >
-              <Trash2 className="w-4 h-4 text-destructive" />
-            </button>
+            <DeleteAlert onConfirm={() => deleteTask(task.id)}>
+              <button className="hover:bg-secondary-foreground/10 p-1 rounded-sm transition">
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </button>
+            </DeleteAlert>
           </div>
         </div>
       </div>
