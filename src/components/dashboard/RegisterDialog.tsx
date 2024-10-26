@@ -51,7 +51,9 @@ const RegisterDialog: React.FC = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button id="register-dialog-button">Get Started</Button>
+        <Button className="w-full sm:w-auto" id="register-dialog-button">
+          Get Started
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs">
         <DialogHeader>
