@@ -22,7 +22,7 @@ export default function LandingPage() {
           {[
             "Smart Task Management",
             "Insightful Analytics",
-            "Stay Organized and Achieve More",
+            "Stay More Organized",
           ].map((feature, index) => (
             <Card
               key={index}
