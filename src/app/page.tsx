@@ -38,7 +38,7 @@ export default function LandingPage() {
           ))}
         </div>
         {accessToken ? (
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/dashboard">Go to Dashboard</Link>
           </Button>
         ) : (
