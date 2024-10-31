@@ -38,4 +38,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
-          script: cd ~/taskmaster-client && git pull && pnpm install && pm2 restart 1
+          script: cd ~/taskmaster-client && git pull && pnpm install && pm2 restart 2
