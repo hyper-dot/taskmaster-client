@@ -71,7 +71,7 @@ const TaskManager: React.FC = () => {
 
         <div className="space-y-4">
           {isLoading ? (
-            Array.from({ length: 10 }).map((_, idx) => (
+            Array.from({ length: 3 }).map((_, idx) => (
               <Skeleton key={idx} className="h-[9.6rem] rounded-xl" />
             ))
           ) : data?.length ? (
